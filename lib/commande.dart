@@ -25,7 +25,12 @@ class _commandeState extends State<commande> {
       stream: DatabaseService(uid:user.uid).Order,
       builder: (context, snapshot) {
         if (snapshot.hasData){
+          DatabaseService.list=snapshot.data!;
            List<TheOrder> commande=snapshot.data!;
+          DatabaseService.list=commande;
+          print("//////////////////7777777777777777777777777");
+          print(commande==null);
+          print(DatabaseService.list==null);
           return SafeArea(child: Scaffold (
             body: Stack(
               children: [

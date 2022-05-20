@@ -20,6 +20,7 @@ class _DoneState extends State<Done> {
     final user = Provider.of<MyUser>(context);
     var dt = DateTime.now();
     String date=dt.year.toString()+"/"+dt.month.toString()+"/"+dt.day.toString();
+    String str =dt.year.toString()+dt.month.toString()+dt.day.toString();
     String time;
     if (dt.hour<10 && dt.minute<10)
     { time = "0"+dt.hour.toString()+":0"+dt.minute.toString();}else
@@ -78,7 +79,10 @@ class _DoneState extends State<Done> {
                 height: 50.h,
                 child: ElevatedButton(
                   onPressed: () async {
+                    String h=(str+time).toString();
+                    print(h);
                     DatabaseService(uid:user.uid).updateHestorique(date,time);
+                    DatabaseService(uid:user.uid).updateArchive( user.uid, time, date,h);
                     DatabaseService(uid:user.uid).deletecommande();
                     DatabaseService(uid:user.uid).setupexist();
                     Navigator.push(

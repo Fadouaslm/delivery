@@ -1,4 +1,6 @@
 
+import 'package:path/path.dart' as p;
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'dart:core';
@@ -20,6 +22,7 @@ class InfoPerso extends StatefulWidget {
 class _InfoPersoState extends State<InfoPerso> {
 
   var  _imageFile  ;
+  late String _url;
   final ImagePicker picker = ImagePicker();
 
   @override
@@ -374,7 +377,7 @@ class _InfoPersoState extends State<InfoPerso> {
 
   }
   Widget ImageProfile (){
-
+    final user = Provider.of<MyUser?>(context);
 
     return Center(
       child:
@@ -384,7 +387,7 @@ class _InfoPersoState extends State<InfoPerso> {
             radius:50.sp,
             backgroundImage:
             _imageFile == null ?
-            AssetImage("images/pic.jpg")
+            NetworkImage(DatabaseService(uid:user!.uid).image())
                 : FileImage(File(_imageFile.path)) as ImageProvider,
           ),
           Positioned(
@@ -498,7 +501,8 @@ class _InfoPersoState extends State<InfoPerso> {
                     width:4.w,
                   ),
                   GestureDetector(
-                    onTap: (){pickpicture(ImageSource.gallery);},
+                    onTap: (){pickpicture(ImageSource.gallery);
+                      },
                     child: Text("importer une photo",
                       style: TextStyle(
                         fontFamily: 'Poppins',
@@ -516,6 +520,7 @@ class _InfoPersoState extends State<InfoPerso> {
 
   }
   void pickpicture (ImageSource source)async {
+    //var image=await ImagePicker.
     final pickedFile = await picker.getImage(
       source: source,
     );
@@ -524,8 +529,19 @@ class _InfoPersoState extends State<InfoPerso> {
     });
   }
   void uploadImage() async {
+   final user = Provider.of<MyUser?>(context);
 try{
-  //FirebaseStorage storage = FirebaseStorage
+  FirebaseStorage storage = FirebaseStorage.instanceFor(bucket:'gs://projet-8522f.appspot.com');
+  Reference ref = storage.ref().child(p.basename(_imageFile.path));
+  UploadTask storageUploadTask =ref.putFile(_imageFile);
+  TaskSnapshot taskSnapshot=await storageUploadTask;
+  String url = await taskSnapshot.ref.getDownloadURL();
+  print('url$url');
+  DatabaseService(uid:user!.uid).urlimage(url);
+  setState(() {
+    DatabaseService(uid:user.uid).urlimage(url);
+    _url=url;
+  });
 }catch(e){}
   }
 }

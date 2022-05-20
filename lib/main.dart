@@ -6,6 +6,9 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:untitled1/auth/auth.dart';
 import 'package:untitled1/splash.dart';
 
+import 'accuil.dart';
+import 'firstcommand.dart';
+
 
 
 void main() async {

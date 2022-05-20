@@ -21,7 +21,7 @@ class profile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final user = Provider.of<MyUser?>(context);
-    return StreamBuilder<Userdata>(
+    return StreamBuilder<Userdata?>(
         stream: DatabaseService(uid:user!.uid).userData,
         builder: (context, snapshot) {
           if (snapshot.hasData){
@@ -69,6 +69,7 @@ class profile extends StatelessWidget {
   }
   Widget drawerheader (BuildContext context){
     double WidthSize = MediaQuery.of(context).size.width;
+    final user = Provider.of<MyUser?>(context);
 
     return Material(
       color: Color(0xffB80000),
@@ -91,7 +92,7 @@ class profile extends StatelessWidget {
                     child: CircleAvatar(
                         radius: 40.sp,
                         backgroundImage:
-                        AssetImage("images/inconnu.png")
+                        NetworkImage(DatabaseService(uid:user!.uid).image())
 
                     ),
                   ),

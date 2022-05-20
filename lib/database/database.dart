@@ -7,6 +7,8 @@ import '../livreur/theorder.dart';
 
 class DatabaseService {
   final String uid ;
+ static List<TheOrder>? list;
+ static double? latR,longR,latC,longC,Nemero;
   DatabaseService( { required this.uid});
 
 
@@ -40,16 +42,13 @@ List <Historique> _historiqueList(QuerySnapshot snapshot ){
   }
 
 
-  List <Commande> _commandeList(QuerySnapshot snapshot){
+  Commande _commandeList(DocumentSnapshot  snapshot){
 
 
-    return snapshot.docs.map((doc)
-    {
-
-      return Commande(LatitudeClient:doc.get("LatitudeClient").toDouble(),LatitudeRestoront: doc.get("LatitudeRestaurant").toDouble(),LongitudeClient :doc.get("LongitudeClient").toDouble() ,LongitudeRestorant: doc.get("LongitudeRestaurant").toDouble(), Nemero: doc.get("Nemero").toDouble() );
+  return Commande(LatitudeClient:snapshot.get("LatitudeClient").toDouble(),LatitudeRestoront: snapshot.get("LatitudeRestaurant").toDouble(),LongitudeClient :snapshot.get("LongitudeClient").toDouble() ,LongitudeRestorant: snapshot.get("LongitudeRestaurant").toDouble(), Nemero: snapshot.get("Nemero").toDouble() );
 
 
-    }).toList();
+
 
   }
 
@@ -59,9 +58,9 @@ List <Historique> _historiqueList(QuerySnapshot snapshot ){
     return livreurCollection.doc(uid).collection("hestorique").snapshots().map((snapshot)=> _historiqueList(snapshot));
 
   }
-  Stream<List <Commande>> get livreurcom {
+  Stream<Commande> get livreurcom {
 
-    return livreurCollection.doc(uid).collection("commandes").snapshots().map((snapshot) => _commandeList(snapshot));
+    return livreurCollection.doc(uid).collection("commandes").doc("commande").snapshots().map((snapshot) => _commandeList(snapshot));
 
   }
 
@@ -85,7 +84,7 @@ Future deletecommande(){
   Userdata _userdatasnap(DocumentSnapshot snapshot){
 
 
-  return Userdata(name: snapshot.get("nom").toString(), email: snapshot.get("email").toString(), phone:snapshot.get("phone").toString());
+  return Userdata(name: snapshot.get("nom").toString(), email: snapshot.get("email").toString(), phone:snapshot.get("phone").toString(),sex:snapshot.get("sex").toString(),image: snapshot.get("image").toString() );
   }
 
 Stream <Userdata> get userData{
@@ -103,4 +102,43 @@ Stream <Userdata> get userData{
    setupexist (){
   return livreurCollection.doc(uid).collection("commandes").doc("commande").set({"exist":false});
 }
+  Commande commande(){
+
+
+    livreurCollection.doc(uid).collection("commandes").doc("commande").get().then((value) {
+    latR=value.get("LatitudeRestaurant").toDouble();
+    latC=  value.get("LatitudeClient").toDouble();
+    longR=  value.get("LongitudeRestaurant").toDouble();
+    longC= value.get("LongitudeClient").toDouble();
+    Nemero= value.get("Nemero").toDouble();
+    } );
+  print("777777777777777777777777777777777777777777777");
+
+latR ??= 0;latC ??= 0;longC??= 0;longR ??= 0;Nemero ??= 0;
+    print(latR!);
+    return Commande(LatitudeClient:latC!,LatitudeRestoront: latR!,LongitudeClient:longC! ,LongitudeRestorant:longR!, Nemero: Nemero! ) ;
+
+
+
+
+  }
+  String image (){
+  String s="";
+  livreurCollection.doc(uid).get().then((value) => s= value.get("image"));
+    return  s;
+  }
+  urlimage (String s){
+    return livreurCollection.doc(uid).set({"image":s});
+  }
+  Future updateArchive(String id,String heure,String date,String docid){
+  for(int i =0;i<list!.length;i++){
+    FirebaseFirestore.instance.collection('Archive').doc(docid).collection("plats").add({"nom":list![i].nomplat,"quantite":list![i].quantite });
+  }
+
+Nemero??=0;
+    return FirebaseFirestore.instance.collection('Archive').doc(docid).set({"Nemero":Nemero,"idLivreur":id,"heure":heure,"date":date}) ;
+
+  }
+
+
 }

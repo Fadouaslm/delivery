@@ -2,11 +2,11 @@
 
 class Commande {
 
-  	 final double LongitudeRestorant ;
-   final double LatitudeRestoront  ;
-    final double LongitudeClient ;
-   final double LatitudeClient  ;
-    final double Nemero;
+  	 final num LongitudeRestorant ;
+   final num LatitudeRestoront  ;
+    final num LongitudeClient ;
+   final num LatitudeClient  ;
+    final num Nemero;
 
 
     Commande({required this.LatitudeClient,required this.LatitudeRestoront,required this.LongitudeClient,required this.LongitudeRestorant,required this.Nemero,} );
