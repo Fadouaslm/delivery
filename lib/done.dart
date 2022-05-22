@@ -80,11 +80,11 @@ class _DoneState extends State<Done> {
                 child: ElevatedButton(
                   onPressed: () async {
                     String h=(str+time).toString();
-                    print(h);
+
                     DatabaseService(uid:user.uid).updateHestorique(date,time);
                     DatabaseService(uid:user.uid).updateArchive( user.uid, time, date,h);
-                    DatabaseService(uid:user.uid).deletecommande();
-                    DatabaseService(uid:user.uid).setupexist();
+                    await DatabaseService(uid:user.uid).deletecommande();
+                   await  DatabaseService(uid:user.uid).setupexist();
                     Navigator.push(
                         context, MaterialPageRoute(
                       builder: (context) =>Acceuil(etape: 'Accune commande'  ,  ),));

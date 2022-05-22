@@ -15,7 +15,7 @@ import 'infoPer.dart';
 
 class profile extends StatelessWidget {
   String full_name ="";
-  String phone_number ="";
+  String phone_number ="                ";
   final AuthService _auth = AuthService();
 
   @override

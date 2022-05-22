@@ -11,6 +11,7 @@ import 'package:material_design_icons_flutter/material_design_icons_flutter.dart
 import 'package:untitled1/database/database.dart';
 import 'package:untitled1/profil.dart';
 import 'auth/user.dart';
+import 'auth/userdata.dart';
 import 'livrer.dart';
 import 'livreur/commande.dart';
 
@@ -34,7 +35,7 @@ PolylinePoints polylinePoints = PolylinePoints();
 Map<PolylineId, Polyline> polylines = {};
 
 class _AcceuilState extends State<Acceuil> {
-  String sex = "";
+  String sexe = "";
   bool servicestatus = false;
   bool haspermission = false;
   late LocationPermission permission;
@@ -63,8 +64,7 @@ class _AcceuilState extends State<Acceuil> {
       BitmapDescriptor.defaultMarkerWithHue(90),
     );
 
-    print("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!12");
-    print("$_destLatitude $_destLongitude");
+
     _getPolyline();
 
     super.initState();
@@ -180,6 +180,7 @@ class _AcceuilState extends State<Acceuil> {
   @override
   Widget build(BuildContext context) {
     final user = Provider.of<MyUser?>(context);
+
     int? notif = 5;
 
 
@@ -188,6 +189,7 @@ class _AcceuilState extends State<Acceuil> {
 
         stream: DatabaseService(uid: user!.uid).exist,
         builder: (context, snapshot) {
+          sexe=DatabaseService(uid: user.uid).sexe1();
           String s=widget.etape;
           if (snapshot.hasData == false) {
             notif = null;
@@ -205,7 +207,6 @@ class _AcceuilState extends State<Acceuil> {
           print(s);
           if (s== 'Aller au restaurant') {
 
-            print("22222222222222222222222222222222222222222");
             _destLatitude =
                 DatabaseService(uid: user.uid).commande().LatitudeRestoront.toDouble();
             _destLongitude =
@@ -215,14 +216,11 @@ class _AcceuilState extends State<Acceuil> {
             _destLongitude =
                 DatabaseService(uid: user.uid).commande().LongitudeClient.toDouble();
           } else {
-            print("111111111111111111111111111111111111111");
+
             _destLatitude = lat;
             _destLongitude = long;
           }
-          print("/////////////////////////////////////////////////////////");
 
-          print(_destLongitude);
-          print(_destLatitude);
           _addMarker(
             LatLng(_destLatitude, _destLongitude),
 
@@ -231,8 +229,7 @@ class _AcceuilState extends State<Acceuil> {
           );
 
           getLocation2();
-          print("555555555555555555555555555555555555555555");
-          print(long);
+
           return SafeArea(
             child: Scaffold(
               drawer: profile(),
@@ -286,7 +283,7 @@ class _AcceuilState extends State<Acceuil> {
                                         width: 21.w,
                                         child: Center(
                                           child: IconButton(
-                                            icon: sex == "M"
+                                            icon: sexe == "M"
                                                 ? Icon(
                                                     MdiIcons.accountOutline,
                                                     color:
@@ -361,7 +358,7 @@ class _AcceuilState extends State<Acceuil> {
                                   fontWeight: FontWeight.bold,
                                 ),
                                 onConfirmation: () {
-                                  Navigator.push(
+                                  Navigator.pushReplacement(
                                     context,
                                     MaterialPageRoute(
                                         builder: (context) =>
@@ -419,8 +416,7 @@ class _AcceuilState extends State<Acceuil> {
       PointLatLng(_destLatitude, _destLongitude),
       travelMode: TravelMode.driving,
     );
-    print("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!1");
-    print("$_destLatitude $_destLongitude");
+
     if (result.points.isNotEmpty) {
       result.points.forEach((PointLatLng point) {
         polylineCoordinates.add(LatLng(point.latitude, point.longitude));

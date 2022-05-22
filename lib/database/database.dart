@@ -8,6 +8,7 @@ import '../livreur/theorder.dart';
 class DatabaseService {
   final String uid ;
  static List<TheOrder>? list;
+ static String? imag ,sexe;
  static double? latR,longR,latC,longC,Nemero;
   DatabaseService( { required this.uid});
 
@@ -76,7 +77,11 @@ Future updateHestorique(String s,String v){
 }
 
 //deletecommonde
-Future deletecommande(){
+Future deletecommande()async {
+  var snapshots = await livreurCollection.doc(uid).collection("commandes").doc("commande").collection("plats").get();
+  for (var doc in snapshots.docs) {
+    await doc.reference.delete();
+  }
   return
     livreurCollection.doc(uid).collection("commandes").doc("commande").delete();
 }
@@ -84,7 +89,7 @@ Future deletecommande(){
   Userdata _userdatasnap(DocumentSnapshot snapshot){
 
 
-  return Userdata(name: snapshot.get("nom").toString(), email: snapshot.get("email").toString(), phone:snapshot.get("phone").toString(),sex:snapshot.get("sex").toString(),image: snapshot.get("image").toString() );
+  return Userdata(name: snapshot.get("nom").toString(), email: snapshot.get("email").toString(), phone:snapshot.get("phone").toString(),sexe:snapshot.get("sexe").toString(),image: snapshot.get("image").toString() );
   }
 
 Stream <Userdata> get userData{
@@ -99,8 +104,8 @@ Stream <Userdata> get userData{
   
   return livreurCollection.doc(uid).collection("commandes").doc("commande").snapshots().map((snapshot) => _existsnap(snapshot));
   }
-   setupexist (){
-  return livreurCollection.doc(uid).collection("commandes").doc("commande").set({"exist":false});
+   setupexist () async {
+  await livreurCollection.doc(uid).collection("commandes").doc("commande").set({"exist":false});
 }
   Commande commande(){
 
@@ -112,10 +117,10 @@ Stream <Userdata> get userData{
     longC= value.get("LongitudeClient").toDouble();
     Nemero= value.get("Nemero").toDouble();
     } );
-  print("777777777777777777777777777777777777777777777");
+
 
 latR ??= 0;latC ??= 0;longC??= 0;longR ??= 0;Nemero ??= 0;
-    print(latR!);
+
     return Commande(LatitudeClient:latC!,LatitudeRestoront: latR!,LongitudeClient:longC! ,LongitudeRestorant:longR!, Nemero: Nemero! ) ;
 
 
@@ -123,22 +128,28 @@ latR ??= 0;latC ??= 0;longC??= 0;longR ??= 0;Nemero ??= 0;
 
   }
   String image (){
-  String s="";
-  livreurCollection.doc(uid).get().then((value) => s= value.get("image"));
-    return  s;
+
+  livreurCollection.doc(uid).get().then((value) => imag= value.get("image"));
+  imag??="";
+    return  imag!;
   }
   urlimage (String s){
     return livreurCollection.doc(uid).set({"image":s});
   }
   Future updateArchive(String id,String heure,String date,String docid){
   for(int i =0;i<list!.length;i++){
-    FirebaseFirestore.instance.collection('Archive').doc(docid).collection("plats").add({"nom":list![i].nomplat,"quantite":list![i].quantite });
+    FirebaseFirestore.instance.collection('Archive').doc(docid+uid[1]+uid[2]).collection("plats").add({"nom":list![i].nomplat,"quantite":list![i].quantite });
   }
 
 Nemero??=0;
     return FirebaseFirestore.instance.collection('Archive').doc(docid).set({"Nemero":Nemero,"idLivreur":id,"heure":heure,"date":date}) ;
 
   }
-
+String sexe1(){
+  livreurCollection.doc(uid).get().then((value) => sexe= value.get("sexe"));
+  sexe??="M";
+  return sexe!;
+}
 
 }
+

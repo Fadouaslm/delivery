@@ -236,7 +236,7 @@ class _InfoPersoState extends State<InfoPerso> {
                           BoxDecoration(
                             image: DecorationImage(
                                 image:
-                                AssetImage("images/Profile.png"),
+                                NetworkImage(DatabaseService(uid:user.uid).image()),
                                 fit: BoxFit.cover),
                           ),
                         ),
@@ -470,7 +470,9 @@ class _InfoPersoState extends State<InfoPerso> {
 
                 ),
                 GestureDetector(
-                  onTap: (){pickpicture(ImageSource.camera);},
+                  onTap: (){
+                    pickpicture(ImageSource.camera);
+                    uploadImage(context);},
                   child: Text("Prendre une photo",
                     style: TextStyle(
                       fontFamily: 'Poppins',
@@ -520,7 +522,7 @@ class _InfoPersoState extends State<InfoPerso> {
 
   }
   void pickpicture (ImageSource source)async {
-    //var image=await ImagePicker.
+
     final pickedFile = await picker.getImage(
       source: source,
     );
@@ -528,7 +530,7 @@ class _InfoPersoState extends State<InfoPerso> {
       _imageFile = pickedFile;
     });
   }
-  void uploadImage() async {
+  void uploadImage(context) async {
    final user = Provider.of<MyUser?>(context);
 try{
   FirebaseStorage storage = FirebaseStorage.instanceFor(bucket:'gs://projet-8522f.appspot.com');
